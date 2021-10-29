@@ -1,0 +1,101 @@
+<canvas class="canvas" width="800" height="500"></canvas>
+<script>
+	function willBeBorn(chance) {
+		if (Math.random()*100 < chance) {
+			return true
+		}
+		return false;
+	}
+
+	function copyArray(from, to) {
+		for (var i = 0; i < from.length; i++) {
+    		to[i] = from[i].slice();
+    	}
+	}
+
+
+	var canvas = document.getElementsByClassName('canvas')[0];
+	var ctx = canvas.getContext('2d');
+	//0 - nothing, 1 - alive, 2 - death
+	var nothingNumber = 0;
+	var aliveNumber = 1;
+	var deathNumber = 2;
+	var nothingColor = '#000';
+	var aliveColor = '#8bc34a';
+	var deathColor = '#009688';
+	var bornChance = 55;
+	var matrix = new Array(500);
+
+	console.log(matrix.length);
+	for (var i1 = 0; i1 < matrix.length; i1++) {
+		matrix[i1] = new Array(800);
+		for (var i2 = 0; i2 < matrix[i1].length; i2++) {
+			matrix[i1][i2] = nothingNumber;
+		}
+	}
+
+	matrix[250][400] = aliveNumber;
+	
+
+	function loop() {
+		cleanSpace();
+		var nextMatrix = [];
+		copyArray(matrix, nextMatrix);
+
+		for (var i1 = 0; i1 < matrix.length; i1++) {
+			for(var i2 = 0; i2 < matrix[i1].length; i2++) {
+				if (matrix[i1][i2] === nothingNumber) {
+					ctx.beginPath();
+					ctx.rect(i2, i1, 1, 1);
+					ctx.fillStyle = nothingColor;
+					ctx.fill();
+					ctx.closePath();
+
+
+				}
+				else if (matrix[i1][i2] === deathNumber) {
+					ctx.beginPath();
+					ctx.rect(i2, i1, 1, 1);
+					ctx.fillStyle = deathColor;
+					ctx.fill();
+					ctx.closePath();
+				}
+				else if (matrix[i1][i2] === aliveNumber) {
+					ctx.beginPath();
+					ctx.rect(i2, i1, 1, 1);
+					ctx.fillStyle = aliveColor;
+					ctx.fill();
+					ctx.closePath();
+
+
+					if (willBeBorn(bornChance) && matrix [i1 - 1][i2] === nothingNumber) {
+						nextMatrix[i1 - 1][i2] = aliveNumber;
+					}
+					if (willBeBorn(bornChance) && matrix [i1 + 1][i2] === nothingNumber) {
+						nextMatrix[i1 + 1][i2] = aliveNumber;
+					}
+					if (willBeBorn(bornChance) && matrix [i1][i2 - 1] === nothingNumber) {
+						nextMatrix[i1][i2 - 1] = aliveNumber;
+					}
+					if (willBeBorn(bornChance) && matrix [i1][i2 + 1] === nothingNumber) {
+						nextMatrix[i1][i2 + 1] = aliveNumber;
+					}
+
+					nextMatrix[i1][i2] = deathNumber;
+				}
+
+			}
+		}
+
+		matrix = nextMatrix;
+		console.log('d');
+		setTimeout(loop, 100);
+	}
+
+	function cleanSpace() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	}
+
+
+	loop();
+</script>
